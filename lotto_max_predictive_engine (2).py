@@ -83,9 +83,9 @@ if uploaded_file:
 
     # ----- Prediction -----
     def generate_prediction(score, co_matrix):
-        top = np.argsort(score)[-10:][::-1]
+        top = np.argsort(score)[-3:][::-1]  # Only top 3 numbers
         draws = []
-        for _ in range(10):
+        for _ in range(3):
             draw = set()
             for i in top:
                 if len(draw) < 3:
@@ -101,7 +101,7 @@ if uploaded_file:
     predicted_draws = generate_prediction(composite_score, co_occurrence)
 
     # ----- UI: Charts and Predictions -----
-    st.header("🔢 Predicted Draws (Top 10)")
+    st.header("🔢 Predicted Draws (Top 3)")
     for i, d in enumerate(predicted_draws):
         st.write(f"Draw {i+1}: {d}")
 
