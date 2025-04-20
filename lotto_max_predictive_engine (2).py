@@ -95,7 +95,7 @@ if uploaded_file:
             for i in best_partners:
                 if len(draw) < 7 and (i + 1) not in draw:
                     draw.add(i + 1)
-            draws.append(sorted(draw))
+            draws.append(sorted(list(draw)))
         return draws
 
     predicted_draws = generate_prediction(composite_score, co_occurrence)
@@ -103,7 +103,7 @@ if uploaded_file:
     # ----- UI: Charts and Predictions -----
     st.header("🔢 Predicted Draws (Top 3)")
     for i, d in enumerate(predicted_draws):
-        st.write(f"Draw {i+1}: {d}")
+        st.write(f"Draw {i+1}: {', '.join(map(str, d))}")
 
     st.header("📊 Heatmap of Number Co-Occurrence")
     fig, ax = plt.subplots(figsize=(10, 8))
