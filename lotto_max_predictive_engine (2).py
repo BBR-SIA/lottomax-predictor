@@ -82,19 +82,26 @@ if uploaded_file:
     rf.fit(X_train, y_train)
 
     # ----- Prediction -----
-    def generate_prediction(score, co_matrix):
-        top = np.argsort(score)[-3:][::-1]  # Only top 3 numbers
+    def generate_prediction(score, co_matrix, num_draws=3):
+        top_indices = np.argsort(score)[-20:][::-1]  # top 20 likely numbers
         draws = []
-        for _ in range(3):
+        used_numbers = set()
+
+        for _ in range(num_draws):
             draw = set()
-            for i in top:
-                if len(draw) < 3:
-                    draw.add(i + 1)
-            co_related = co_matrix[list(draw)].sum(axis=0)
-            best_partners = np.argsort(co_related)[-10:][::-1]
+            seeds = [i for i in top_indices if (i + 1) not in used_numbers][:3]
+            for idx in seeds:
+                draw.add(idx + 1)
+                used_numbers.add(idx + 1)
+
+            # Find best co-occurring partners
+            co_related = co_matrix[list(draw) if draw else [0]].sum(axis=0)
+            best_partners = np.argsort(co_related)[::-1]
             for i in best_partners:
                 if len(draw) < 7 and (i + 1) not in draw:
                     draw.add(i + 1)
+                    used_numbers.add(i + 1)
+
             draws.append(sorted(list(draw)))
         return draws
 
