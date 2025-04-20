@@ -1,4 +1,3 @@
-
 # Lotto Max Predictive Engine with Streamlit Dashboard
 
 import pandas as pd
@@ -50,14 +49,20 @@ if uploaded_file:
     # ----- 3. Multivariate Score -----
     def get_composite_score(temporal, co_matrix):
         freq = np.array([Counter(all_draws.values.flatten())[i] for i in range(1, 51)])
-        recency = np.zeros(51)
+        recency = np.zeros(50)
         for i in range(1, 51):
             indices = np.where(all_draws.values == i)
             if len(indices[0]) > 0:
                 last_appearance = np.max(indices[0])
-                recency[i] = 1 / (len(all_draws) - last_appearance + 1)
+                recency[i - 1] = 1 / (len(all_draws) - last_appearance + 1)
         co_score = co_matrix.sum(axis=1)
-        total = 0.4 * temporal + 0.3 * (freq / freq.sum()) + 0.2 * recency + 0.1 * co_score
+        temporal_used = temporal[1:] if len(temporal) == 51 else temporal
+        total = (
+            0.4 * temporal_used +
+            0.3 * (freq / freq.sum()) +
+            0.2 * recency +
+            0.1 * co_score
+        )
         return total / total.sum()
 
     composite_score = get_composite_score(temporal_scores, co_occurrence)
